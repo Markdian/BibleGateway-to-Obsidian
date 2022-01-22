@@ -1,4 +1,24 @@
 # BibleGateway-to-Obsidian-RVR1960
+Este es un fork del repositorio [selfire1/BibleGateway-to-Obsidian](https://github.com/selfire1/BibleGateway-to-Obsidian) para soportar las traducciones de la Biblia al español.
+
+### Actualizaciones incluidas
+
+- He movido al mismo directorio el archivo `bg2md.rb`
+- `bg2obs.sh`:
+  - Actualice los nombres y abreviaciones de los 66 libros de la Biblia
+  - Cambie la traduccion por defecto a la "RVR1960"
+  - Add translation to note title to facilitate working with multiple translations in Obsidian
+
+### Configuracion y uso
+
+Estos son los pasos que segui para configurar los scripts.
+- Clone el repositorio a mi pc personal.
+- Instale las gemas faltantes: `sudo gem install colorize optparse clipboard`
+- Para agregar el efecto del versiculo, agregar el siguiente CSS snippet usando [este enlace](https://forum.obsidian.md/t/organising-the-bible-in-obsidian/1490/92)
+- Ejecuta el siguiente comando en tu terminal
+  - `bash bg2obs.sh -v RVR1960 -i`
+- Copia el resultado `La Biblia (RVR1960)` a tu baul en Obsidian.
+---
 This script adapts [jgclark's BibleGateway-to-Markdown](https://github.com/jgclark/BibleGateway-to-Markdown) script to export for use in [Obsidian](https://obsidian.md/). It accompanies a [Bible Study in Obsidian Kit](https://forum.obsidian.md/t/bible-study-in-obsidian-kit-including-the-bible-in-markdown/12503?u=selfire) that gets you hands-on with using Scripture in your personal notes.
 
 What the script does is fetch the text from [Bible Gateway](https://www.biblegateway.com/) and save it as formatted markdown file. Each chapter is saved as one file and navigation between files as well as a book-file is automatically created. All of the chapter files of a book are saved in its numbered folder.
