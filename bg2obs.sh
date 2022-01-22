@@ -1,19 +1,20 @@
 #!/bin/bash
 #----------------------------------------------------------------------------------
-# This script runs Jonathan clark's bg2md.rb ruby script and formats the output
-# to be useful in Obsidian. Find the script here: https://github.com/jgclark/BibleGateway-to-Markdown
+# Este script corre el script en ruby de Janathan Clark bg2md.rb
+# para hacerlo usable en Obsidian. Encuentra el script en https://github.com/jgclark/BibleGateway-to-Markdown
 #
-# It needs to be run in the same directoy as the 'bg2md.rb' script and will output
-# one .md file for each chapter, organising them in folders corresponding to the book.
+# Es necesario correr el script 'bg2md.rb' en el mismo directorio para generar
+# un archivo .md por cada capitulo, organizandolos en sus carpetas correspondientes.
+#
 # Navigation on the top and bottom is also added.
 #
 #----------------------------------------------------------------------------------
 # SETTINGS
 #----------------------------------------------------------------------------------
-# Setting a different translation:
-# Using the abbreviation with the -v flag, you can call on a different translation.
-# It defaults to the "World English Bible", if you change the translation,
-# make sure to honour the copyright restrictions.
+# Para indicar una version o traduccion diferente
+# Usando la abreviacion -v, puedes llamar una version o idioma diferente.
+# La version por defecto es la "World English Bible".
+# Si quieres cambiar de version o idioma asegurate de respetar las restricciones de derecho de author.
 #----------------------------------------------------------------------------------
 
 usage()
@@ -31,11 +32,11 @@ usage()
 # Extract command line options
 
 # Clear translation variable if it exists and set defaults for others
-translation='WEB'    # Which translation to use
+translation='RVR1960'    # Which translation to use
 boldwords="false"    # Set words of Jesus in bold
 headers="false"      # Include editorial headers
 aliases="false"      # Create an alias in the YAML front matter for each chapter title
-verbose="false"      # Show download progress for each chapter
+verbose="true"      # Show download progress for each chapter
 
 # Process command line args
 while getopts 'v:beai?h' c
@@ -50,39 +51,40 @@ do
 	esac
 done
 
-# Initialize variables
-book_counter=0 # Setting the counter to 0
-book_counter_max=66 # Setting the max amount to 66, since there are 66 books we want to import
+# Inicializar las variables
+book_counter=0 # Establecer el contador en 0
+book_counter_max=66 # Establecer la cantidad maxima en 66 libros
 
-# Book list
-declare -a bookarray # Declaring the Books of the Bible as a list
-declare -a abbarray # Delaring the abbreviations for each book. You can adapt if you'd like
-declare -a lengtharray # Declaring amount of chapters in each book
+# Lista de libros
+declare -a bookarray # Declarando los Libros de la Biblia como una lista
+declare -a abbarray # Declarar las abreviaturas de cada libro. Puedes adaptarlas si quieres
+declare -a lengtharray # Declarar la cantidad de capítulos en cada libro
 
 # -------------------------------------------
 # TRANSLATION: Lists of Names
 # -------------------------------------------
 # For Translation, translate these three lists. Seperated by space and wrapped in quotes if they include whitespace.
-# Name of "The Bible" in your language
-biblename="The Bible"
-# Full names of the books of the Bible
-bookarray=(Genesis Exodus Leviticus Numbers Deuteronomy Joshua Judges Ruth "1 Samuel" "2 Samuel" "1 Kings" "2 Kings" "1 Chronicles" "2 Chronicles" Ezra Nehemiah Esther Job Psalms Proverbs Ecclesiastes "Song of Solomon" Isaiah Jeremiah Lamentations Ezekiel Daniel Hosea Joel Amos Obadiah Jonah Micah Nahum Habakkuk Zephaniah Haggai Zechariah Malachi Matthew Mark Luke John Acts
-Romans "1 Corinthians" "2 Corinthians" Galatians Ephesians Philippians Colossians "1 Thessalonians" "2 Thessalonians" "1 Timothy" "2 Timothy" Titus Philemon Hebrews James "1 Peter" "2 Peter" "1 John" "2 John" "3 John" Jude Revelation)
-# Short names of the books of the Bible
-abbarray=(Gen Exod Lev Num Deut Josh Judg Ruth "1 Sam" "2 Sam" "1 Kings" "2 Kings" "1 Chron" "2 Chron" Ezr Neh Esth Job Ps Prov Eccles Song Isa Jer Lam Ezek Dan Hos Joel Am Obad Jonah Micah Nah Hab Zeph Hag Zech Mal Matt Mark Luke John Acts Rom "1 Cor" "2 Cor" Gal Ephes Phil Col "1 Thess" "2 Thess" "1 Tim" "2 Tim" Titus Philem Heb James "1 Pet" "2 Pet" "1 John" "2 John" "3 John" Jude Rev)
+# Nombre de "La Biblia" en tu idioma
+biblename="La Biblia"
+numberarray=("01 - " "02 - " "03 - " "04 - " "05 - " "06 - " "07 - " "08 - " "09 - " "10 - " "11 - " "12 - " "13 - " "14 - " "15 - " "16 - " "17 - " "18 - " "19 - " "20 - " "21 - " "22 - " "23 - " "24 - " "25 - " "26 - " "27 - " "28 - " "29 - " "30 - " "31 - " "32 - " "33 - " "34 - " "35 - " "36 - " "37 - " "38 - " "39 - " "40 - " "41 - " "42 - " "43 - " "44 - " "45 - " "46 - " "47 - " "48 - " "49 - " "50 - " "51 - " "52 - " "53 - " "54 - " "55 - " "56 - " "57 - " "58 - " "59 - " "60 - " "61 - " "62 - " "63 - " "64 - " "65 - " "66 - ")
+# Nombres completos de los libros de la Biblia
+bookarray=(Génesis Éxodo Levítico Números Deuteronomio Josué Jueces Rut "1 Samuel" "2 Samuel" "1 Reyes" "2 Reyes" "1 Crónicas" "2 Crónicas" Esdras Nehemías Ester Job Salmos Proverbios Eclesiastés Cantares Isaías Jeremías Lamentaciones Ezequiel Daniel Oseas Joel Amós Abdías Jonás Miqueas Nahúm Habacuc Sofonías Hageo Zacarías Malaquías "San Mateo" "San Marcos" "San Lucas" "San Juan" Hechos Romanos "1 Corintios" "2 Corintios" Gálatas Efesios Filipenses Colosenses "1 Tesalonicenses" "2 Tesalonisences" "1 Timoteo" "2 Timoteo" Tito Filemón Hebreos Santiago "1 Pedro" "2 Pedro" "1 Juan" "2 Juan" "3 Juan" Judas Apocalipsis)
+# Nombres cortos de los libros de la Biblia
+abbarray=(Gen Exod Lev Num Deut Jos Jue Rut "1 Sam" "2 Sam" "1 Rey" "2 Rey" "1 Cron" "2 Cron" Esd Neh Est Job Sal Prov Ecl Cant Isa Jer Lam Ezeq Dan Os Joel Am Abd Jon Miq Nah Hab Sof Hag Zac Mal Mat Mar Luc Jn Hech Rom "1 Cor" "2 Cor" Gal Ef Fil Col "1 Tes" "2 Tes" "1 Tim" "2 Tim" Tito Filem Heb Sant "1 Ped" "2 Ped" "1 Jn" "2 Jn" "3 Jn" Jud Apoc)
 # -------------------------------------------
 
-# Book chapter list
+# Lista de capítulos de libros
 lengtharray=(50 40 27 36 34 24 21 4 31 24 22 25 29 36 10 13 10 42 150 31 12 8 66 52 5 48 12 14 3 9 1 4 7 3 3 3 2 14 4 28 16 24 21 28 16 16 13 6 6 4 4 5 3 6 4 3 1 13 5 5 3 5 1 1 1 22)
+
 
 # Initialise the "The Bible" file for all of the books
 echo -e "# ${biblename}\n" >> "${biblename}.md"
 
 if ${verbose} -eq "true"; then
-	echo "Starting download of ${translation} Bible."
+	echo "Descarga puesta en marcha de la biblia ${translation}."
 fi
 
- # Cycling through the book counter, setting which book and its maxchapter
+ # Recorre el contador de libros y configurando el libro y la cantidad de capitulos
   for ((book_counter=0; book_counter <= book_counter_max; book_counter++))
   do
 
@@ -91,6 +93,7 @@ fi
 	fi
 
     book=${bookarray[$book_counter]}
+    numberbook=${numberarray[book_counter]}
     maxchapter=${lengtharray[$book_counter]}
     abbreviation=${abbarray[$book_counter]}
 
@@ -163,15 +166,15 @@ filename=${export_prefix}$chapter # Setting the filename
   folder_name="${book}" # Setting the folder name
 
   # Creating a folder for the book of the Bible if it doesn't exist, otherwise moving new file into existing folder
-  mkdir -p "./${biblename} (${translation})/${folder_name}"; mv "${filename}".md "./${biblename} (${translation})/${folder_name}"
+  mkdir -p "./${biblename} (${translation})/${numberbook}${folder_name}"; mv "${filename}".md "./${biblename} (${translation})/${numberbook}${folder_name}"
 
 
 done # End of the book exporting loop
 
   # Create an overview file for each book of the Bible:
-  overview_file="links: [[${biblename}]]\n# ${book}\n\n[[${abbreviation} 1|Start Reading →]]"
+  overview_file="Regresa a: [[${biblename}]]\n# ${book}\n\n[[${abbreviation} 1| Empieza a leer la Biblia →]]"
   echo -e $overview_file >> "$book.md"
-  mv "$book.md" "./${biblename} (${translation})/${folder_name}"
+  mv "$book.md" "./${biblename} (${translation})/${numberbook}${folder_name}"
 
   # Append the bookname to "The Bible" file
   echo -e "* [[${book}]]" >> "${biblename}.md"
@@ -198,5 +201,5 @@ find . -name "*.md" -print0 | xargs -0 perl -pi -e 's/######\s([0-9]\s|[0-9][0-9
 find . -name "*.md" -print0 | xargs -0 perl -pi -e 's/\<crossref intro.*crossref\>//g'
 
 if ${verbose} -eq "true"; then
-echo "Download complete. Markdown files ready for Obsidian import."
+echo "Descarga completa. Los archivos Markdown estan listos para ser usados en Obsidian."
 fi
